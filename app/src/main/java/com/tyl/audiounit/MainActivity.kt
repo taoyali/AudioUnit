@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,11 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyl.audiounit.ui.TopAppBarCenter
+import com.tyl.opensl.AudioOpenSLJava
+import com.tyl.opensl.AudioOpenSLKotlin
 
 
 class MainActivity : ComponentActivity() {
@@ -36,9 +35,19 @@ class MainActivity : ComponentActivity() {
     private val dataList = listOf(
         ActionModel("Audio - OpenSL ES", action = {
 
+            println("OpenSL ES action start")
+            // native test
+            val result = AudioOpenSLKotlin.printLog("hello native")
+            println("OpenSL ES result = " + result)
+            println("OpenSL ES action end")
         }),
         ActionModel("Audio - Oboe", action = {
 
+            println("Oboe action start")
+            // native test
+            val result = AudioOpenSLJava.printLog("hello native")
+            println("Oboe result = " + result)
+            println("Oboe action end")
         }),
 //        ActionModel("Audio - ", action = {
 //
@@ -50,6 +59,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             val context = LocalContext.current as Activity
             MaterialTheme {
@@ -86,6 +96,7 @@ fun MidiaColumn(list: List<ActionModel>) {
             ) {
                 items(list.count()) {
                     Button(onClick = {
+                        println("tap action")
                         list[it].action()
                     }, colors = ButtonDefaults.buttonColors()) {
                         Text(text = list[it].title, style = titleTextStyle)
