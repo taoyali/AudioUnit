@@ -1,7 +1,13 @@
 package com.tyl.audiounit
 
 import android.app.Activity
+import android.content.Context
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.AudioRecord
 import android.os.Bundle
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -32,12 +38,34 @@ import com.tyl.opensl.AudioOpenSLKotlin
 
 class MainActivity : ComponentActivity() {
 
+    private var nativeSampleRate: String = ""
+    private var nativeSampleBufSize: String? = null
+    private val delaySeekBar: SeekBar? = null
+    private val curDelayTV: TextView? = null
+    private val echoDelayProgress = 0L
+
+    private val decaySeekBar: SeekBar? = null
+    private val curDecayTV: TextView? = null
+    private val echoDecayProgress = 0f
+
+    private var supportRecording = false
+
     private val dataList = listOf(
         ActionModel("Audio - OpenSL ES", action = {
 
             println("OpenSL ES action start")
+
+            queryNativeAudioParameters();
+
             // native test
             val result = AudioOpenSLKotlin.printLog("hello native")
+            AudioOpenSLJava.initOpenSLEngine(
+                Integer.parseInt(nativeSampleRate),
+                Integer.parseInt(nativeSampleBufSize),
+                echoDelayProgress,
+                echoDecayProgress
+            );
+
             println("OpenSL ES result = " + result)
             println("OpenSL ES action end")
         }),
@@ -56,6 +84,24 @@ class MainActivity : ComponentActivity() {
 //
 //        }),
     )
+
+    private fun queryNativeAudioParameters() {
+        supportRecording = true
+        when(val audioManager = getSystemService(Context.AUDIO_SERVICE)) {
+            is AudioManager -> {
+                this.nativeSampleRate = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
+                this.nativeSampleBufSize = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
+            }
+            else -> {
+                supportRecording = false
+                return
+            }
+        }
+
+        when(AudioRecord.getMinBufferSize(nativeSampleRate.toInt(), AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)) {
+            AudioRecord.ERROR, AudioRecord.ERROR_BAD_VALUE -> supportRecording = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

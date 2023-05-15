@@ -8,5 +8,7 @@ public class AudioOpenSLKotlin {
         }
 
         open external fun printLog(name: String) : String
+
+        open external fun initOpenSLEnginer()
     }
 }

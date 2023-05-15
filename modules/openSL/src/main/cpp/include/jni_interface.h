@@ -5,6 +5,8 @@
 #ifndef AUDIOUNIT_JNI_INTERFACE_H
 #define AUDIOUNIT_JNI_INTERFACE_H
 
+#include <jni.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,8 +17,14 @@ Java_com_tyl_opensl_AudioOpenSLKotlin_00024Companion_printLog(JNIEnv *env, jobje
 JNIEXPORT jstring JNICALL
 Java_com_tyl_opensl_AudioOpenSLJava_printLog(JNIEnv* env, jclass thiz, jstring name);
 
+JNIEXPORT void JNICALL
+Java_com_tyl_opensl_AudioOpenSLJava_initOpenSLEngine(JNIEnv *env, jclass clazz, jint sampleRate,
+                                                     jint framesPerBuf, jlong delayInMs,
+                                                     jfloat decay);
+
 #ifdef __cplusplus
-};
+}
 #endif
+
 
 #endif //AUDIOUNIT_JNI_INTERFACE_H
