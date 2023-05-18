@@ -43,4 +43,14 @@ Java_com_tyl_opensl_AudioOpenSLJava_initOpenSLEngine(JNIEnv *env, jclass clazz, 
     createOpenSLEngine(sampleRate, framesPerBuf, delayInMs, decay);
 }
 
+/**
+ * 配置Audio
+ */
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_tyl_opensl_AudioOpenSLJava_configAudio(JNIEnv *env, jclass clazz, jint delay,
+                                                jfloat decay) {
+   configAudio();
+}
+
 

@@ -22,6 +22,10 @@ Java_com_tyl_opensl_AudioOpenSLJava_initOpenSLEngine(JNIEnv *env, jclass clazz, 
                                                      jint framesPerBuf, jlong delayInMs,
                                                      jfloat decay);
 
+JNIEXPORT void JNICALL
+Java_com_tyl_opensl_AudioOpenSLJava_configAudio(JNIEnv *env, jclass clazz, jint delay,
+                                                jfloat decay);
+
 #ifdef __cplusplus
 }
 #endif

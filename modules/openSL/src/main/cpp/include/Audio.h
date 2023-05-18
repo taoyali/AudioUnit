@@ -20,6 +20,8 @@
 
 void createOpenSLEngine(int sampleRate, int framesPerBuf, long delayInMs, float decay);
 
+void configAudio(int delayInMs, float decay);
+
 struct AudioEngine {
     SLmilliHertz fastPathSampleRate_;
     uint32_t fastPathFramesPerBuf_;

@@ -61,3 +61,11 @@ void createOpenSLEngine(int sampleRate, int framesPerBuf, long delayInMs, float 
             engine.echoDecay_);
     assert(engine.delayEffect_);
 }
+
+void configAudio(int delayInMs, float decay) {
+    engine.echoDelay_ = delayInMs;
+    engine.echoDecay_ = decay;
+
+    engine.delayEffect_->setDelayTime(delayInMs);
+    engine.delayEffect_->setDecayWeight(decay);
+}
