@@ -3,10 +3,14 @@
 #include <iostream>
 #include <string>
 #include <sys/types.h>
+#include <stdbool.h>
 
 // OpenSL ES Android
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+
+// JNI
+#include <jni.h>
 
 // software business developer
 #include "../include/audio_common.h"
@@ -17,6 +21,8 @@
 using namespace std;
 
 static AudioEngine engine;
+
+bool EngineService(void *ctx, uint32_t msg, void *data);
 
 void createOpenSLEngine(int sampleRate, int framesPerBuf, long delayInMs, float decay) {
 
@@ -69,3 +75,23 @@ void configAudio(int delayInMs, float decay) {
     engine.delayEffect_->setDelayTime(delayInMs);
     engine.delayEffect_->setDecayWeight(decay);
 }
+
+bool createSLBufferQueueAudioPlayer() {
+    SampleFormat sampleFormat;
+    memset(&sampleFormat, 0, sizeof(sampleFormat));
+    sampleFormat.pcmFormat_ = (uint16_t)engine.bitsPerSample_;
+    sampleFormat.framesPerBuf_ = engine.fastPathFramesPerBuf_;
+
+    sampleFormat.channels_ = (uint16_t)engine.sampleChannels_;
+    sampleFormat.sampleRate_ = engine.fastPathSampleRate_;
+
+    engine.player_ = new AudioPlayer(&sampleFormat, engine.slENgineItf_);
+    assert(engine.player_);
+    if (engine.player_ == nullptr) return false;
+
+    engine.player_->SetBufQueue(engine.recBufQueue_, engine.freeBufQueue_);
+    engine.player_->RegisterCallback(EngineService, (void *)&engine);
+
+    return true;
+}
+

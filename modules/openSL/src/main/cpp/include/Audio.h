@@ -17,6 +17,7 @@
 #include "../include/audio_common.h"
 #include "../include/audio_buf_manager.h"
 #include "../include/audio_effect.h"
+#include "../include/audio_player.h"
 
 void createOpenSLEngine(int sampleRate, int framesPerBuf, long delayInMs, float decay);
 
@@ -37,6 +38,7 @@ struct AudioEngine {
     int64_t echoDelay_;
     float echoDecay_;
     AudioDelay *delayEffect_;
+    AudioPlayer *player_;
 };
 
 #endif //AUDIOUNIT_AUDIO_H
