@@ -33,12 +33,13 @@ struct AudioEngine {
     SLEngineItf slENgineItf_;
     uint32_t bufCount_;
     sample_buf *bufs_;
+    AudioRecorder *recorder_;
     AudioQueue *freeBufQueue_;
     AudioQueue *recBufQueue_;
     int64_t echoDelay_;
     float echoDecay_;
     AudioDelay *delayEffect_;
-    AudioPlayer *player_;
+    AudioPlayerMe *player_;
 };
 
 #endif //AUDIOUNIT_AUDIO_H

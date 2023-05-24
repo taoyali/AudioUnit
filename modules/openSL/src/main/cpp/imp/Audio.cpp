@@ -76,6 +76,49 @@ void configAudio(int delayInMs, float decay) {
     engine.delayEffect_->setDecayWeight(decay);
 }
 
+
+uint32_t dbgEngineGetBufCount(void) {
+    uint32_t count = engine.player_->dbgGetDevBufCount();
+    count += engine.recorder_->dbgGetDevBufCount();
+    count += engine.freeBufQueue_->size();
+    count += engine.recBufQueue_->size();
+
+    LOGE(
+            "Buf Disrtibutions: PlayerDev=%d, RecDev=%d, FreeQ=%d, "
+            "RecQ=%d",
+            engine.player_->dbgGetDevBufCount(),
+            engine.recorder_->dbgGetDevBufCount(), engine.freeBufQueue_->size(),
+            engine.recBufQueue_->size());
+    if (count != engine.bufCount_) {
+        LOGE("====Lost Bufs among the queue(supposed = %d, found = %d)", BUF_COUNT,
+             count);
+    }
+    return count;
+}
+
+
+bool EngineService(void  *ctx, uint32_t msg, void *data) {
+    assert(ctx == &engine);
+    switch (msg) {
+        case ENGINE_SERVICE_MSG_RETRIEVE_DUMP_BUFS: {
+            *(static_cast<uint32_t *>(data)) == dbgEngineGetBufCount();
+            break;
+        }
+        case ENGINE_SERVICE_MSG_RECORDED_AUDIO_AVAILABLE: {
+            // adding audio delay effect
+            sample_buf *buf = static_cast<sample_buf *>(data);
+            assert(engine.fastPathFramesPerBuf_ ==
+                   buf->size_ / engine.sampleChannels_ / (engine.bitsPerSample_ / 8));
+            engine.delayEffect_->process(reinterpret_cast<int16_t *>(buf->buf_),
+                                         engine.fastPathFramesPerBuf_);
+            break;
+        }
+        default:
+            assert(false);
+            return false;
+    }
+}
+
 bool createSLBufferQueueAudioPlayer() {
     SampleFormat sampleFormat;
     memset(&sampleFormat, 0, sizeof(sampleFormat));
@@ -85,7 +128,7 @@ bool createSLBufferQueueAudioPlayer() {
     sampleFormat.channels_ = (uint16_t)engine.sampleChannels_;
     sampleFormat.sampleRate_ = engine.fastPathSampleRate_;
 
-    engine.player_ = new AudioPlayer(&sampleFormat, engine.slENgineItf_);
+    engine.player_ = new AudioPlayerMe(&sampleFormat, engine.slENgineItf_);
     assert(engine.player_);
     if (engine.player_ == nullptr) return false;
 

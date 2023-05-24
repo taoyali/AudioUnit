@@ -6,12 +6,15 @@
 #define AUDIOUNIT_AUDIO_PLAYER_H
 
 #include <sys/types.h>
+#include <mutex>
+#include <SLES/OpenSLES.h>
+#include <SLES/OpenSLES_Android.h>
 
 #include "audio_common.h"
 #include "audio_buf_manager.h"
 #include "audio_debug_utils.h"
 
-class AudioPlayer {
+class AudioPlayerMe {
     // buffer queue player interfaces
     SLObjectItf outputMixObjectItf_;
     SLObjectItf playerObjectItf_;
@@ -32,8 +35,8 @@ class AudioPlayer {
     std::mutex stopMutex_;
 
 public:
-    explicit AudioPlayer(SampleFormat *sampleFormat, SLEngineItf engine);
-    ~AudioPlayer();
+    explicit AudioPlayerMe(SampleFormat *sampleFormat, SLEngineItf engine);
+    ~AudioPlayerMe();
     void SetBufQueue(AudioQueue *playQ, AudioQueue *freeQ);
     SLresult Start(void);
     void Stop(void);
